@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Attendance</title>
+    <style>
+        body { font-family: Arial; text-align: center; margin: 30px; }
+        table { margin: 20px auto; border-collapse: collapse; width: 70%; }
+        th, td { border: 1px solid #ccc; padding: 8px; }
+        th { background-color: #e67e22; color: white; }
+        input { transform: scale(1.2); margin: 5px; }
+        button { padding: 5px 10px; }
+        a { text-decoration: none; color: #3498db; }
+    </style>
+</head>
+<body>
+    <h2>Mark Attendance for {{ today }}</h2>
+
+    {% if session.role in ['admin', 'manager'] %}
+    <form method="POST">
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Room</th>
+                <th>Present</th>
+            </tr>
+            {% for s in students %}
+            <tr>
+                <td>{{ s.name }}</td>
+                <td>{{ s.room }}</td>
+                <td><input type="checkbox" name="present" value="{{ s.id }}"></td>
+            </tr>
+            {% endfor %}
+        </table>
+        <button type="submit">Submit Attendance</button>
+    </form>
+
+    {% else %}
+    <p>You do not have permission to mark attendance for all students.</p>
+    <p>Students should use their personal attendance page.</p>
+    {% endif %}
+
+    <a href="{{ url_for('home') }}">Back to Home</a>
+</body>
+</html>
