@@ -5,11 +5,18 @@ from datetime import date
 import os
 from functools import wraps
 
-app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', 'dev_secret_key_change_this')
+app = Flask(_name_)
+app.secret_key = os.environ.get('SECRET_KEY', 'dev_secret_key_change_this_in_production')
 
-# MySQL configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:irsha0409@localhost/hostel_food'
+# Database configuration for Render
+import re
+if 'RENDER' in os.environ:
+    # Production - PostgreSQL on Render
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL').replace('postgres://', 'postgresql://')
+else:
+    # Development - SQLite locally (works on all systems)
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hostel_food.db'
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -69,19 +76,26 @@ class AllergyReport(db.Model):
 # ------------------ Initialize DB & Default Users ------------------
 
 with app.app_context():
-    db.create_all()
-
-    if not User.query.filter_by(username='admin').first():
-        admin = User(username='admin', role='admin', full_name='Administrator')
-        admin.set_password('admin123')
-        db.session.add(admin)
+    try:
+        db.create_all()
+        
+        # Create default admin user if not exists
+        if not User.query.filter_by(username='admin').first():
+            admin = User(username='admin', role='admin', full_name='Administrator')
+            admin.set_password('admin123')
+            db.session.add(admin)
+        
+        # Create default manager user if not exists
+        if not User.query.filter_by(username='manager').first():
+            manager = User(username='manager', role='manager', full_name='Food Manager')
+            manager.set_password('manager123')
+            db.session.add(manager)
+            
         db.session.commit()
-
-    if not User.query.filter_by(username='manager').first():
-        manager = User(username='manager', role='manager', full_name='Food Manager')
-        manager.set_password('manager123')
-        db.session.add(manager)
-        db.session.commit()
+        print("Database initialized successfully!")
+    except Exception as e:
+        print(f"Database initialization error: {e}")
+        db.session.rollback()
 
 # ------------------ Role Decorator ------------------
 
@@ -111,32 +125,7 @@ def home():
             return redirect(url_for('student_dashboard'))
     return render_template('index.html')
 
-
 # ------------------ Authentication ------------------
-
-# @app.route('/login', methods=['GET', 'POST'])
-# def login():
-#     if request.method == 'POST':
-#         username = request.form['username']
-#         password = request.form['password']
-
-#         user = User.query.filter_by(username=username).first()
-#         student = Student.query.filter_by(username=username).first()
-
-#         if user and user.check_password(password):
-#             session['user_id'] = user.id
-#             session['username'] = user.username
-#             session['role'] = user.role
-#             return redirect(url_for(f"{user.role}_dashboard"))
-#         elif student and student.check_password(password):
-#             session['user_id'] = student.id
-#             session['username'] = student.username
-#             session['role'] = 'student'
-#             return redirect(url_for('student_dashboard'))
-#         else:
-#             flash('Invalid username or password', 'danger')
-
-#     return render_template('login.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -170,7 +159,6 @@ def login():
     # Pass login_type to the template if needed
     login_type = request.args.get('login_type', 'admin_manager')
     return render_template('login.html', login_type=login_type)
-
 
 @app.route('/logout')
 def logout():
@@ -352,7 +340,13 @@ def food_count():
         weekday=weekday
     )
 
+# ------------------ Health Check Route ------------------
+
+@app.route('/health')
+def health_check():
+    return "Hostel Food Management App is running!"
+
 # ------------------ Run App ------------------
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0',port=5000,debug=false)
+if _name_ == '_main_':
+    app.run(host='0.0.0.0', port=5000, debug=False)
