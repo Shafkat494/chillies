@@ -129,29 +129,72 @@ def home():
 
 # ------------------ Authentication ------------------
 
+# @app.route('/login', methods=['GET', 'POST'])
+# def login():
+#     # Check login type from URL query parameter or form submission
+#     login_type = request.args.get('login_type', 'admin_manager')
+
+#     if request.method == 'POST':
+#         username = request.form['username']
+#         password = request.form['password']
+#         login_type = request.form.get('login_type', login_type)
+
+#         if login_type == 'admin_manager':
+#             # Admin / Manager login
+#             user = User.query.filter_by(username=username).first()
+#             if user and user.role in ['admin', 'manager'] and user.check_password(password):
+#                 session['user_id'] = user.id
+#                 session['username'] = user.username
+#                 session['role'] = user.role
+#                 return redirect(url_for(f"{user.role}_dashboard"))
+#             else:
+#                 flash('Invalid admin/manager credentials!', 'danger')
+
+#         elif login_type == 'student':
+#             # Student login
+#             student = Student.query.filter_by(username=username).first()
+#             if student and student.check_password(password):
+#                 session['user_id'] = student.id
+#                 session['username'] = student.username
+#                 session['role'] = 'student'
+#                 return redirect(url_for('student_dashboard'))
+#             else:
+#                 flash('Invalid student credentials!', 'danger')
+
+#     # Render the correct login page depending on login_type
+#     if login_type == 'student':
+#         return render_template('student_login.html', login_type=login_type)
+#     else:
+#         return render_template('manager_login.html', login_type=login_type)
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    # Check login type from URL query parameter or form submission
+    # Determine requested login type from querystring (GET) or from the form (POST)
     login_type = request.args.get('login_type', 'admin_manager')
 
+    # If POST, prefer the form value (keeps login_type through the submit)
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
         login_type = request.form.get('login_type', login_type)
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '')
 
+        # --- Admin / Manager login (shared page) ---
         if login_type == 'admin_manager':
-            # Admin / Manager login
             user = User.query.filter_by(username=username).first()
             if user and user.role in ['admin', 'manager'] and user.check_password(password):
                 session['user_id'] = user.id
                 session['username'] = user.username
                 session['role'] = user.role
-                return redirect(url_for(f"{user.role}_dashboard"))
+                # Redirect to the right dashboard
+                if user.role == 'admin':
+                    return redirect(url_for('admin_dashboard'))
+                else:
+                    return redirect(url_for('manager_dashboard'))
             else:
-                flash('Invalid admin/manager credentials!', 'danger')
+                flash('Invalid Admin/Manager credentials!', 'danger')
 
+        # --- Student login ---
         elif login_type == 'student':
-            # Student login
             student = Student.query.filter_by(username=username).first()
             if student and student.check_password(password):
                 session['user_id'] = student.id
@@ -159,13 +202,13 @@ def login():
                 session['role'] = 'student'
                 return redirect(url_for('student_dashboard'))
             else:
-                flash('Invalid student credentials!', 'danger')
+                flash('Invalid Student credentials!', 'danger')
 
-    # Render the correct login page depending on login_type
-    if login_type == 'student':
-        return render_template('student_login.html', login_type=login_type)
-    else:
-        return render_template('manager_login.html', login_type=login_type)
+    # GET request: render appropriate login form
+    # NOTE: We render the login page even if a session exists,
+    # because you may want to allow logout and re-login as another role.
+    # If you want to force previously logged-in users to the dashboard, you can add a redirect here.
+    return render_template('login.html', login_type=login_type)
 
 
 @app.route('/logout')
