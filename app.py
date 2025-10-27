@@ -5,21 +5,29 @@ from datetime import date
 import os
 from functools import wraps
 
-app = Flask(_name_)
-app.secret_key = os.environ.get('SECRET_KEY', 'dev_secret_key_change_this_in_production')
+app = Flask(__name__)
+app.secret_key = os.environ.get('SECRET_KEY', 'dev_secret_key_change_this')
 
-# Database configuration for Render
-import re
-if 'RENDER' in os.environ:
-    # Production - PostgreSQL on Render
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL').replace('postgres://', 'postgresql://')
-else:
-    # Development - SQLite locally (works on all systems)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hostel_food.db'
+# ------------------ Database Configuration ------------------
 
+DEFAULT_SQLITE = 'sqlite:///local.db'
+database_url = os.environ.get('DATABASE_URL', DEFAULT_SQLITE)
+
+# Fix for MySQL URI format on Render
+if database_url.startswith("mysql://"):
+    database_url = database_url.replace("mysql://", "mysql+pymysql://", 1)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+# Optional: avoids timeout issues on Render
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+    "pool_pre_ping": True
+}
+
 db = SQLAlchemy(app)
+# ------------------------------------------------------------
+
 
 # ------------------ Database Models ------------------
 
@@ -76,26 +84,19 @@ class AllergyReport(db.Model):
 # ------------------ Initialize DB & Default Users ------------------
 
 with app.app_context():
-    try:
-        db.create_all()
-        
-        # Create default admin user if not exists
-        if not User.query.filter_by(username='admin').first():
-            admin = User(username='admin', role='admin', full_name='Administrator')
-            admin.set_password('admin123')
-            db.session.add(admin)
-        
-        # Create default manager user if not exists
-        if not User.query.filter_by(username='manager').first():
-            manager = User(username='manager', role='manager', full_name='Food Manager')
-            manager.set_password('manager123')
-            db.session.add(manager)
-            
+    db.create_all()
+
+    if not User.query.filter_by(username='admin').first():
+        admin = User(username='admin', role='admin', full_name='Administrator')
+        admin.set_password('admin123')
+        db.session.add(admin)
         db.session.commit()
-        print("Database initialized successfully!")
-    except Exception as e:
-        print(f"Database initialization error: {e}")
-        db.session.rollback()
+
+    if not User.query.filter_by(username='manager').first():
+        manager = User(username='manager', role='manager', full_name='Food Manager')
+        manager.set_password('manager123')
+        db.session.add(manager)
+        db.session.commit()
 
 # ------------------ Role Decorator ------------------
 
@@ -124,6 +125,7 @@ def home():
         elif session['role'] == 'student':
             return redirect(url_for('student_dashboard'))
     return render_template('index.html')
+
 
 # ------------------ Authentication ------------------
 
@@ -159,6 +161,7 @@ def login():
     # Pass login_type to the template if needed
     login_type = request.args.get('login_type', 'admin_manager')
     return render_template('login.html', login_type=login_type)
+
 
 @app.route('/logout')
 def logout():
@@ -340,13 +343,8 @@ def food_count():
         weekday=weekday
     )
 
-# ------------------ Health Check Route ------------------
-
-@app.route('/health')
-def health_check():
-    return "Hostel Food Management App is running!"
-
 # ------------------ Run App ------------------
 
-if _name_ == '_main_':
-    app.run(host='0.0.0.0', port=5000, debug=False)
+if __name__ == "__main__":
+    # This allows local testing
+    app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
