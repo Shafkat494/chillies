@@ -131,13 +131,16 @@ def home():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    # Check login type from URL query parameter or form submission
+    login_type = request.args.get('login_type', 'admin_manager')
+
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        login_type = request.form.get('login_type', 'admin_manager')  # default to admin/manager
+        login_type = request.form.get('login_type', login_type)
 
         if login_type == 'admin_manager':
-            # Only check the User table and allow only admin/manager roles
+            # Admin / Manager login
             user = User.query.filter_by(username=username).first()
             if user and user.role in ['admin', 'manager'] and user.check_password(password):
                 session['user_id'] = user.id
@@ -148,7 +151,7 @@ def login():
                 flash('Invalid admin/manager credentials!', 'danger')
 
         elif login_type == 'student':
-            # Only check the Student table
+            # Student login
             student = Student.query.filter_by(username=username).first()
             if student and student.check_password(password):
                 session['user_id'] = student.id
@@ -158,9 +161,11 @@ def login():
             else:
                 flash('Invalid student credentials!', 'danger')
 
-    # Pass login_type to the template if needed
-    login_type = request.args.get('login_type', 'admin_manager')
-    return render_template('login.html', login_type=login_type)
+    # Render the correct login page depending on login_type
+    if login_type == 'student':
+        return render_template('student_login.html', login_type=login_type)
+    else:
+        return render_template('manager_login.html', login_type=login_type)
 
 
 @app.route('/logout')
