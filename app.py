@@ -132,7 +132,7 @@ def home():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     # Check login type from URL query parameter or form submission
-    login_type = request.args.get('login_type', 'admin_manager')
+    # login_type = request.args.get('login_type', 'admin_manager')
 
     if request.method == 'POST':
         username = request.form['username']
