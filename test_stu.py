@@ -4,6 +4,8 @@ from app import app, db, Student
 students = [
     {"name": "Test Student 1", "username": "student1", "password": "s123", "room": "101", "allergies": "", "food_type": "veg"},
     {"name": "Test Student 2", "username": "student2", "password": "s456", "room": "102", "allergies": "nuts", "food_type": "non-veg"},
+    {"name": "Test student 3", "username": "9103243105", "password": "Shafkat@123", "room": "101", "allergies": "", "food_type": "veg"},
+     {"name": "Test Student 4", "username": "6006615494", "password": "Ulfat@123", "room": "101", "allergies": "", "food_type": "veg"},
 ]
 
 with app.app_context():
