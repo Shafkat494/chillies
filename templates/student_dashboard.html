@@ -1,192 +1,162 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Student Dashboard</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    :root {
-      --bg-a: #2c3e50;
-      --bg-b: #4b6a88;
-    }
-
-    html, body {
-      height: 100%;
-      margin: 0;
-    }
-
-    body {
-      background: linear-gradient(135deg, var(--bg-a), var(--bg-b));
-      min-height: 100vh;
-      font-family: 'Poppins', sans-serif;
-      color: #fff;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .background-animation {
-      position: fixed;
-      inset: 0;
-      overflow: hidden;
-      z-index: 0;
-      pointer-events: none;
-    }
-
-    .background-animation .circle {
-      position: absolute;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.06);
-      box-shadow: 0 0 120px rgba(255,255,255,0.10);
-      filter: blur(6px);
-      transform: translate3d(0,0,0);
-      will-change: transform, opacity;
-      animation: float-slow infinite alternate ease-in-out;
-      opacity: 0.9;
-    }
-
-    .circle.c1 { width: 420px; height: 420px; top: 6%; left: 6%; animation-duration: 26s; --dx: 40px; --dy: -50px; }
-    .circle.c2 { width: 360px; height: 360px; top: 18%; right: 8%; animation-duration: 30s; --dx: -60px; --dy: 40px; }
-    .circle.c3 { width: 520px; height: 520px; bottom: 4%; left: 12%; animation-duration: 34s; --dx: 60px; --dy: 30px; }
-    .circle.c4 { width: 300px; height: 300px; top: 40%; left: 62%; animation-duration: 22s; --dx: -45px; --dy: -30px; }
-    .circle.c5 { width: 460px; height: 460px; top: 58%; right: 18%; animation-duration: 28s; --dx: 50px; --dy: -45px; }
-    .circle.c6 { width: 380px; height: 380px; bottom: 18%; right: 38%; animation-duration: 32s; --dx: -35px; --dy: 55px; }
-
-    @keyframes float-slow {
-      from { transform: translate3d(0,0,0) scale(1); opacity: 0.85; }
-      to   { transform: translate3d(var(--dx,20px), var(--dy, -20px), 0) scale(1.03); opacity: 0.95; }
-    }
-
-    .navbar {
-      background: rgba(0,0,0,0.42) !important;
-      backdrop-filter: blur(8px);
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-      position: relative;
-      z-index: 10;
-    }
-
-    .navbar-brand { font-weight: 600; color: #fff !important; }
-    .navbar-text { color: #dcdcff; font-weight: 500; }
-
-    .btn-outline-light {
-      border: 1px solid rgba(255,255,255,0.6);
-      color: #fff;
-      transition: all 0.25s ease;
-    }
-    .btn-outline-light:hover { background: rgba(255,255,255,0.08); transform: translateY(-2px); }
-
-    .card {
-      background: rgba(255,255,255,0.08);
-      backdrop-filter: blur(8px);
-      border: none;
-      border-radius: 16px;
-      box-shadow: 0 10px 28px rgba(0,0,0,0.28);
-      color: #fff;
-      transition: transform 0.28s ease, box-shadow 0.28s ease;
-      z-index: 5;
-    }
-    .card:hover { transform: translateY(-6px); box-shadow: 0 18px 44px rgba(0,0,0,0.36); }
-
-    h2.fw-bold { z-index: 5; position: relative; }
-    .text-light { color: rgba(255,255,255,0.9); }
-
-    .btn-success {
-      background: linear-gradient(135deg,#00c6ff,#0072ff);
-      border: none;
-      color: #fff;
-      font-weight: 600;
-      border-radius: 10px;
-      padding: 0.6rem 1.1rem;
-    }
-
-    .container {
-      padding-top: 72px;
-      position: relative;
-      z-index: 6;
-    }
-
-    .row { justify-content: center; }
-
-    @media (max-width:768px) {
-      .circle { filter: blur(8px); opacity: 0.7; }
-      .container { padding-top: 84px; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Student Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-  <!-- Large soft floating circles -->
-  <div class="background-animation" aria-hidden="true">
-    <div class="circle c1"></div>
-    <div class="circle c2"></div>
-    <div class="circle c3"></div>
-    <div class="circle c4"></div>
-    <div class="circle c5"></div>
-    <div class="circle c6"></div>
-  </div>
 
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<style>
+  body {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    min-height: 100vh;
+    font-family: 'Poppins', sans-serif;
+    color: #fff;
+  }
+
+  /* Navbar */
+  .navbar {
+    background: rgba(0, 0, 0, 0.3) !important;
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  }
+
+  .navbar-brand {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: #fff !important;
+  }
+
+  .navbar-text {
+    color: #dcdcff;
+    font-weight: 500;
+  }
+
+  .btn-outline-light {
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    color: #fff;
+    transition: all 0.3s ease;
+  }
+
+  .btn-outline-light:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+  }
+
+  /* Dashboard Cards */
+  .card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(12px);
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    color: #fff;
+    transition: all 0.3s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 14px 35px rgba(0, 0, 0, 0.35);
+  }
+
+  h5 {
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    color: #e8e8e8;
+    font-size: 15px;
+    margin-bottom: 1.2rem;
+  }
+
+  .btn-success {
+    background: linear-gradient(135deg, #43e97b, #38f9d7);
+    border: none;
+    color: #000;
+    font-weight: 600;
+    border-radius: 10px;
+    padding: 0.6rem 1.2rem;
+    transition: all 0.3s ease;
+  }
+
+  .btn-success:hover {
+    transform: translateY(-2px);
+    opacity: 0.95;
+  }
+
+  /* Layout tweaks */
+  .container {
+    padding-top: 60px;
+  }
+
+  .row {
+    justify-content: center;
+  }
+
+  .card {
+    animation: fadeIn 0.8s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .card {
+      margin: 0 1rem;
+    }
+  }
+</style>
+
+
+<body class="bg-light">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#">Student Dashboard</a>
-      <div class="d-flex">
-        <span class="navbar-text me-3">
-          Hello, {{ session.get('username', 'Guest') }}
-        </span>
-
-        {% if 'logout' in app.view_functions %}
-        <a href="{{ url_for('logout') }}" class="btn btn-outline-light btn-sm">Logout</a>
-        {% else %}
-        <a href="#" class="btn btn-outline-light btn-sm disabled">Logout</a>
-        {% endif %}
-      </div>
+        <a class="navbar-brand" href="#">Student Dashboard</a>
+        <div class="d-flex">
+            <span class="navbar-text me-3">Hello, {{ session['username'] }}</span>
+            <a href="{{ url_for('logout') }}" class="btn btn-outline-light btn-sm">Logout</a>
+        </div>
     </div>
-  </nav>
+</nav>
 
-  <!-- Dashboard Content -->
-  <div class="container mt-5">
+<div class="container mt-5">
+    <div class="container py-5">
     <div class="text-center mb-5">
-      <h2 class="fw-bold">Welcome to Your Dashboard</h2>
-      <p class="text-light">Manage your hostel activities easily and quickly</p>
+        <h2 class="fw-bold">Welcome to Your Dashboard</h2>
+        <p class="text-light">Manage your hostel activities easily and quickly</p>
     </div>
+
 
     <div class="row g-4">
-      <div class="col-md-6">
-        <div class="card shadow-sm text-center p-4">
-          <h5>Mark Attendance</h5>
-          <p>Mark your attendance for today.</p>
-          {% if 'student_attendance' in app.view_functions %}
-          <a href="{{ url_for('student_attendance') }}" class="btn btn-success">Go</a>
-          {% else %}
-          <a href="#" class="btn btn-success disabled">Go</a>
-          {% endif %}
+        <div class="col-md-6">
+            <div class="card shadow-sm text-center p-4">
+                <h5>Mark Attendance</h5>
+                <p>Mark your attendance for today.</p>
+                <a href="{{ url_for('student_attendance') }}" class="btn btn-success">Go</a>
+            </div>
         </div>
-      </div>
 
-      <div class="col-md-6">
-        <div class="card shadow-sm text-center p-4">
-          <h5>View Menu</h5>
-          <p>Check today's meals.</p>
-          {% if 'student_menu' in app.view_functions %}
-          <a href="{{ url_for('student_menu') }}" class="btn btn-success">Go</a>
-          {% else %}
-          <a href="#" class="btn btn-success disabled">Go</a>
-          {% endif %}
+        <div class="col-md-6">
+            <div class="card shadow-sm text-center p-4">
+                <h5>View Menu</h5>
+                <p>Check today's meals.</p>
+                <a href="{{ url_for('student_menu') }}" class="btn btn-success">Go</a>
+            </div>
         </div>
-      </div>
-
-      <div class="col-md-6">
-        <div class="card shadow-sm text-center p-4">
-          <h5>Send Feedback</h5>
-          <p>Share your thoughts about food or hostel services.</p>
-          {% if 'student_feedback' in app.view_functions %}
-          <a href="{{ url_for('student_feedback') }}" class="btn btn-success">Give Feedback</a>
-          {% else %}
-          <a href="#" class="btn btn-success disabled">Give Feedback</a>
-          {% endif %}
-        </div>
-      </div>
     </div>
-  </div>
+</div>
+
 </body>
 </html>
