@@ -25,7 +25,6 @@
       position: relative;
     }
 
-    /* Animated Background — six large soft circles (static markup, CSS controls motion) */
     .background-animation {
       position: fixed;
       inset: 0;
@@ -46,7 +45,6 @@
       opacity: 0.9;
     }
 
-    /* Individual circle sizes / positions / speeds */
     .circle.c1 { width: 420px; height: 420px; top: 6%; left: 6%; animation-duration: 26s; --dx: 40px; --dy: -50px; }
     .circle.c2 { width: 360px; height: 360px; top: 18%; right: 8%; animation-duration: 30s; --dx: -60px; --dy: 40px; }
     .circle.c3 { width: 520px; height: 520px; bottom: 4%; left: 12%; animation-duration: 34s; --dx: 60px; --dy: 30px; }
@@ -59,7 +57,6 @@
       to   { transform: translate3d(var(--dx,20px), var(--dy, -20px), 0) scale(1.03); opacity: 0.95; }
     }
 
-    /* Navbar */
     .navbar {
       background: rgba(0,0,0,0.42) !important;
       backdrop-filter: blur(8px);
@@ -70,7 +67,6 @@
     }
 
     .navbar-brand { font-weight: 600; color: #fff !important; }
-
     .navbar-text { color: #dcdcff; font-weight: 500; }
 
     .btn-outline-light {
@@ -80,7 +76,6 @@
     }
     .btn-outline-light:hover { background: rgba(255,255,255,0.08); transform: translateY(-2px); }
 
-    /* Cards */
     .card {
       background: rgba(255,255,255,0.08);
       backdrop-filter: blur(8px);
@@ -108,7 +103,7 @@
     .container {
       padding-top: 72px;
       position: relative;
-      z-index: 6; /* ensure content sits above circles */
+      z-index: 6;
     }
 
     .row { justify-content: center; }
@@ -120,7 +115,7 @@
   </style>
 </head>
 <body>
-  <!-- Large soft floating circles (static markup to avoid Jinja errors) -->
+  <!-- Large soft floating circles -->
   <div class="background-animation" aria-hidden="true">
     <div class="circle c1"></div>
     <div class="circle c2"></div>
@@ -135,8 +130,15 @@
     <div class="container-fluid">
       <a class="navbar-brand" href="#">Student Dashboard</a>
       <div class="d-flex">
-        <span class="navbar-text me-3">Hello, {{ session['username'] }}</span>
+        <span class="navbar-text me-3">
+          Hello, {{ session.get('username', 'Guest') }}
+        </span>
+
+        {% if 'logout' in app.view_functions %}
         <a href="{{ url_for('logout') }}" class="btn btn-outline-light btn-sm">Logout</a>
+        {% else %}
+        <a href="#" class="btn btn-outline-light btn-sm disabled">Logout</a>
+        {% endif %}
       </div>
     </div>
   </nav>
@@ -153,7 +155,11 @@
         <div class="card shadow-sm text-center p-4">
           <h5>Mark Attendance</h5>
           <p>Mark your attendance for today.</p>
+          {% if 'student_attendance' in app.view_functions %}
           <a href="{{ url_for('student_attendance') }}" class="btn btn-success">Go</a>
+          {% else %}
+          <a href="#" class="btn btn-success disabled">Go</a>
+          {% endif %}
         </div>
       </div>
 
@@ -161,7 +167,11 @@
         <div class="card shadow-sm text-center p-4">
           <h5>View Menu</h5>
           <p>Check today's meals.</p>
+          {% if 'student_menu' in app.view_functions %}
           <a href="{{ url_for('student_menu') }}" class="btn btn-success">Go</a>
+          {% else %}
+          <a href="#" class="btn btn-success disabled">Go</a>
+          {% endif %}
         </div>
       </div>
 
@@ -169,7 +179,11 @@
         <div class="card shadow-sm text-center p-4">
           <h5>Send Feedback</h5>
           <p>Share your thoughts about food or hostel services.</p>
+          {% if 'student_feedback' in app.view_functions %}
           <a href="{{ url_for('student_feedback') }}" class="btn btn-success">Give Feedback</a>
+          {% else %}
+          <a href="#" class="btn btn-success disabled">Give Feedback</a>
+          {% endif %}
         </div>
       </div>
     </div>
