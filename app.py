@@ -397,9 +397,6 @@
 #     # This allows local testing
 #     app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 5000))) 
 
-
-
-
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
