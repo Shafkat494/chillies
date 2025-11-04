@@ -397,6 +397,8 @@
 #     # This allows local testing
 #     app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 5000))) 
 
+
+
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -825,6 +827,32 @@ def attendance_report():
 
 # ------------------ Feedback ------------------
 
+# @app.route('/student_feedback', methods=['GET', 'POST'])
+# @role_required('student')
+# def student_feedback():
+#     student = Student.query.filter_by(username=session['username']).first()
+#     if not student:
+#         flash("Student record not found.", "danger")
+#         return redirect(url_for('logout'))
+
+#     if request.method == 'POST':
+#         message = request.form.get('message', '').strip()
+#         rating = request.form.get('rating', None)
+
+#         if not message:
+#             flash("Please enter your feedback before submitting.", "warning")
+#             return redirect(url_for('student_feedback'))
+
+#         new_feedback = Feedback(student_id=student_id, message=message, rating=rating)
+#         db.session.add(new_feedback)
+#         db.session.commit()
+
+#         flash("Thank you for your feedback! ✅", "success")
+#         return redirect(url_for('student_dashboard'))
+
+#     feedbacks = Feedback.query.filter_by(student_id=student_id).order_by(Feedback.created_at.desc()).all()
+#     return render_template('student_feedback.html',student=student, feedbacks=feedbacks)
+
 @app.route('/student_feedback', methods=['GET', 'POST'])
 @role_required('student')
 def student_feedback():
@@ -841,14 +869,20 @@ def student_feedback():
             flash("Please enter your feedback before submitting.", "warning")
             return redirect(url_for('student_feedback'))
 
-        new_feedback = Feedback(student_id=student.id, message=message, rating=rating)
+        # Anonymous feedback (no student_id saved)
+        new_feedback = Feedback(message=message, rating=rating)
         db.session.add(new_feedback)
         db.session.commit()
 
-        flash("Thank you for your feedback! ✅", "success")
+        flash("Thank you for your anonymous feedback! ✅", "success")
         return redirect(url_for('student_dashboard'))
 
-    return render_template('student_feedback.html')
+    # Show only feedback submitted by this user (optional)
+    # If anonymous, you can skip filtering by student_id
+    feedbacks = Feedback.query.order_by(Feedback.created_at.desc()).all()
+
+    return render_template('student_feedback.html',student=student, feedbacks=feedbacks)
+
 
 @app.route('/admin_feedbacks')
 @role_required('admin', 'manager')
@@ -861,4 +895,6 @@ def admin_feedbacks():
 if __name__ == "__main__":
     # This allows local testing
     app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+
+
 
